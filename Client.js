@@ -85,7 +85,6 @@ export const GetApi = async (fields, action) => {
 
 
 export const PostApi = async (fields, action) => {
-  console.log(fields, action, "check data")
   // const constuserdetails = JSON.parse(localStorage.getItem('userDetails'));
   const sessiondetails = await AsyncStorage.getItem('userdata');
   const constuserdetails = JSON.parse(sessiondetails);
@@ -338,7 +337,7 @@ export const PostApi = async (fields, action) => {
 
   return await axios.post(apiurl + url, fields, { 'headers': headers })
     .then((res) => {
-      console.log(res);
+      console.log(res,"check the response from client");
       return res.data;
     }).catch((error) => {
       // window.location = "/";

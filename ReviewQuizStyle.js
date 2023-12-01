@@ -1,23 +1,21 @@
 import { StyleSheet, Dimensions, Platform } from 'react-native';
-//import { getStatusBarHeight, ifIphoneX } from  '../../common';
+// import { getStatusBarHeight, ifIphoneX } from '../../common';
 
 const deviceWidth = Dimensions.get('window').width;
 const deviceHeight = Dimensions.get('window').height;
 
+const isIos = Platform.OS === 'ios';
 export default StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     flex: 1,
-    zIndex: 1,
-    paddingTop:0,
-    marginTop:"-90px",
-    
+    zIndex: 1, 
   },
-  header: {
-    paddingTop: 0,
-    marginTop: 20,
-    // paddingHorizontal: 16,
-  },
+  // header: {
+  //   paddingTop: Platform.OS === 'ios' ? getStatusBarHeight() : 0,
+  //   marginTop: 20,
+  //   // paddingHorizontal: 16,
+  // },
   header1: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -80,38 +78,31 @@ export default StyleSheet.create({
     fontWeight: '500',
     fontSize: 18,
     lineHeight: 27,
-    color: '#000',
   },
 
-  btn: {
-    flexDirection: 'row',
-    position: 'absolute',
-    // ...ifIphoneX(
-    //   {
-    //     bottom: 50,
-    //     right: 16,
-    //   },
-    //   {
-    //     bottom: 16,
-    //     right: 16,
-    //   }
-    // ),
+  // btn: {
+  //   flexDirection: 'row',
+  //   position: 'absolute',
+  //   ...ifIphoneX(
+  //     {
+  //       bottom: 50,
+  //       right: 16,
+  //     },
+  //     {
+  //       bottom: 16,
+  //       right: 16,
+  //     }
+  //   ),
 
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  // },
   txtBtn: {
     fontFamily: 'Poppins-Medium',
     fontWeight: '500',
     fontSize: 16,
     lineHeight: 24,
     marginRight: 9,
-  },
-  txt1: {
-    fontFamily: 'Poppins',
-    fontWeight: '400',
-    fontSize: 12,
-    lineHeight: 18,
   },
   // txtContent: {
   //   fontFamily: 'Poppins',
@@ -122,7 +113,7 @@ export default StyleSheet.create({
   // },
 
   childTitle: {
-    fontFamily: 'Poppins-Medium',
+    fontFamily: 'Poppins',
     fontWeight: '500',
     fontSize: 18,
     lineHeight: 27,
@@ -156,7 +147,7 @@ export default StyleSheet.create({
   },
 
   txtContent: {
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins-ExtraLight',
     fontSize: 13,
     lineHeight: 20,
     color: '#000',
@@ -205,16 +196,6 @@ export default StyleSheet.create({
     color: '#000',
     fontWeight: '500',
     marginLeft: 10,
-    justifyContent: 'flex-start',
-    flex: 1,
-  },
-  txtLength: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#000',
-    fontWeight: '500',
-    marginLeft: 10,
   },
   txtOverview: {
     marginTop: 13,
@@ -225,52 +206,34 @@ export default StyleSheet.create({
     fontWeight: '300',
   },
   subTitle: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   totalHours: {
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins-ExtraLight',
     fontSize: 10,
-    marginLeft: 10,
+    lineHeight: 20,
     color: '#8F8F8F',
     fontWeight: '300',
   },
   txtItemLession: {
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins-ExtraLight',
     fontSize: 12,
     lineHeight: 20,
     color: '#4E4E4E',
     fontWeight: '300',
     marginLeft: 10,
-    flex: 1,
   },
 
   btnFinish: {
     backgroundColor: '#36CE61',
     borderRadius: 6,
-    // width: 80,
-    paddingHorizontal: 21,
-    height: 40,
+    width: 80,
+    height: 35,
     justifyContent: 'center',
     alignItems: 'center',
-    // width: 100,
-    alignSelf: 'flex-start',
   },
-  btnFinishCourse: {
-    backgroundColor: '#222',
-    borderRadius: 6,
-    // width: 80,
-    paddingHorizontal: 21,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    right: 0,
-    top: 0,
-  },
-
   txtFinish: {
     fontFamily: 'Poppins-Medium',
     fontSize: 14,
@@ -311,23 +274,47 @@ export default StyleSheet.create({
   },
   viewQuestion: {
     marginTop: 23,
-    paddingHorizontal:15
   },
   itemQuestion: {
     flexDirection: 'row',
     alignItems: 'center',
-    // marginTop: "10px",
+    marginTop: 20,
   },
   txtTitleQuestion: {
-    fontFamily: 'Poppins',
-    fontSize: 24,
+    fontFamily: 'Poppins-Medium',
+    fontSize: 13,
     lineHeight: 20,
     color: '#000',
     fontWeight: '500',
   },
   txtItemQuestion: {
     fontFamily: 'Poppins',
-    fontSize: 24,
+    fontSize: 13,
+    lineHeight: 19,
+    color: '#878787',
+    marginLeft: 9,
+  },
+  viewQuestion1: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 13,
+  },
+  itemQuestion1: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  txtTitleQuestion1: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 13,
+    lineHeight: 20,
+    color: '#000',
+    fontWeight: '500',
+  },
+  txtItemQuestion1: {
+    fontFamily: 'Poppins',
+    fontSize: 13,
     lineHeight: 19,
     color: '#878787',
     marginLeft: 9,
@@ -335,15 +322,10 @@ export default StyleSheet.create({
   viewBtnBottom: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 12,
-  },
-  modal: {
-    backgroundColor: '#fff',
-    margin: 0,
-    width: '80%',
+    marginTop: 36,
   },
   btnSubmit: {
-    height: 50,
+    height: 40,
     flex: 1,
     backgroundColor: '#FBC815',
     justifyContent: 'center',
@@ -359,74 +341,35 @@ export default StyleSheet.create({
     fontWeight: '500',
   },
   btnNext: {
-    height: 50,
-    width: 50,
-    backgroundColor: '#F0F0F0',
-    justifyContent: 'center',
+    height: 40,
+    width: 150,
+    borderColor: '#E7E7E7',
+    borderWidth: 1,
+    justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: 8,
+    marginRight: 10,
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    alignSelf: 'center',
+    marginTop: 50,
   },
   btnHint: {
-    height: 50,
-    width: 50,
+    height: 40,
+    width: 40,
     backgroundColor: '#626FE2',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
-
-    marginRight: 10,
-  },
-  iconNext: {
-    resizeMode: 'contain',
-    width: 14,
-    height: 14,
-  },
-  viewNextLesson: {
-    marginTop: 60,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  btnLession: {
-    flexDirection: 'row',
-    borderColor: '#E7E7E7',
-    alignItems: 'center',
-    borderWidth: 1,
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  txtLession: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
-    lineHeight: 18,
-    color: '#000',
-    fontWeight: '500',
-  },
-  txtName: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 16,
-    lineHeight: 20,
-    color: '#000',
-    fontWeight: '500',
-  },
-  iconPreview: {
-    fontSize: 16,
-    color: '#25C717',
-  },
-  viewQuestion1: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 13,
   },
   overview: {
-    paddingHorizontal: 50,
+    paddingHorizontal: 30,
     paddingVertical: 20,
     borderRadius: 24,
     backgroundColor: '#fff',
     marginTop: 25,
     // marginHorizontal: 16,
-    width: deviceWidth - 54,
+    width: deviceWidth - 32,
     height: (207 / 375) * deviceWidth,
     shadowColor: '#000',
     shadowOffset: {
@@ -446,7 +389,6 @@ export default StyleSheet.create({
     // lineHeight: 30,
     color: '#000',
     fontWeight: '500',
-    textAlign:"center"
   },
   txtLable: {
     fontFamily: 'Poppins-Medium',
@@ -462,8 +404,8 @@ export default StyleSheet.create({
     color: '#F46647',
     fontWeight: '500',
   },
-  txt3: {
-    fontFamily: 'Poppins',
+  txt1: {
+    fontFamily: 'Poppins-Medium',
     fontSize: 14,
     lineHeight: 24,
     color: '#D03838',
@@ -477,6 +419,10 @@ export default StyleSheet.create({
     color: '#000',
     fontWeight: '600',
   },
+  viewBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   btnRetoke: {
     width: 150,
     height: 50,
@@ -484,14 +430,6 @@ export default StyleSheet.create({
     backgroundColor: '#F46647',
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
-  },
-  txtRetoke: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
-    lineHeight: 18,
-    color: '#fff',
-    fontWeight: '500',
   },
   btnReview: {
     width: 150,
@@ -500,7 +438,13 @@ export default StyleSheet.create({
     backgroundColor: '#FBC815',
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
+  },
+  txtRetoke: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 12,
+    lineHeight: 18,
+    color: '#fff',
+    fontWeight: '500',
   },
   txtReview: {
     fontFamily: 'Poppins-Medium',
@@ -508,10 +452,5 @@ export default StyleSheet.create({
     lineHeight: 18,
     color: '#000',
     fontWeight: '500',
-  },
-  viewBottom: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
   },
 });

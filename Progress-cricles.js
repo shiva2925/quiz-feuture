@@ -18,7 +18,7 @@ const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 const ProgressCircle = ({
   widthX = 100,
   strokeWidth = 10,
-  progress = 0,
+  progress ,
   progressColor = '#000',
   backgroundColor = '#fff',
   duration = 1000,
@@ -30,7 +30,7 @@ const ProgressCircle = ({
 
   const circumference = radius * 2 * Math.PI;
 
-  const progressRef = useSharedValue(0);
+  const progressRef = useSharedValue(progress);
 
   useEffect(() => {
     progressRef.value = withTiming(progress, {

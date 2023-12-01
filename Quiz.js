@@ -14,7 +14,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { withTranslation } from 'react-i18next';
-
+import ReviewQuiz from "./ReviewQuiz"
 import IconI from 'react-native-vector-icons/Ionicons';
 import IconF from 'react-native-vector-icons/Feather';
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -30,7 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import RenderDataHTML from './render-data-html';
 import ProgressCircle from "./Progress-cricles"
-// import ReviewQuiz from "./Re"
+
 import CountDown from "./Countdowns";
 
 class Quiz extends Component {
@@ -49,6 +49,8 @@ class Quiz extends Component {
       itemQuestion: null,
       isAssignment: false,
       isShowReview: false,
+      retake_count:null, 
+      routeData:{userId:"",sectionId:"",index:0}
     };
     this.item = null;
     this.id = null;
@@ -61,10 +63,15 @@ class Quiz extends Component {
   }
 
   async componentDidMount() {
-    const { route } = this.props;
-    const { item, index, idCourse } = {item:"6546466fe7bfb01861f2a067",index:1,idCourse:"5"};
+    var paramsData = window.location.pathname
+    var params= paramsData.split("/")
+
+    this.setState(this.routeData={userId:params[1],sectionId:params[2],index:Number(params[3])})
+
+    const { item, index, idCourse } = {item:this.routeData.sectionId,index:1,idCourse:"5"};
     
     await this.getLesson();
+    // await this.onStartQuiz()
     this.item = item;
     this.idCourse = idCourse;
     this.setState({
@@ -101,11 +108,11 @@ class Quiz extends Component {
 
     //const response = await Client.quiz(this.item.id);
     const sessiondetails = await AsyncStorage.getItem('userdata');
-    // if (sessiondetails != null) {
-      if (true) {
+    // if (this.routeData.userId) {
+      if (this.routeData.userId) {
       const userdata = JSON.parse(sessiondetails);
       // const response = await Client.quizStart(param);
-      const response = await PostApi({ itemid: "6546466fe7bfb01861f2a067", userid: "6551a9d19f73e81d7c6e7cb4", status: 'started' }, 'GETQUIZ');
+      const response = await PostApi({ itemid: this.routeData.sectionId, userid: this.routeData.userId, status: 'started' }, 'GETQUIZ');
 
       this.setState({
         data: response.data,
@@ -129,16 +136,16 @@ class Quiz extends Component {
     }
   }
 
-  handleBackPress = () => {
-    const { navigation } = this.props;
-    navigation.goBack(null);
-    return true;
-  };
+  // handleBackPress = () => {
+  //   const { navigation } = this.props;
+  //   navigation.goBack(null);
+  //   return true;
+  // };
 
-  goBack = () => {
-    const { navigation } = this.props;
-    navigation.goBack();
-  };
+  // goBack = () => {
+  //   const { navigation } = this.props;
+  //   navigation.goBack();
+  // };
 
   onReloadDataRetake = async data => {
 
@@ -156,19 +163,19 @@ class Quiz extends Component {
     // if (this.id === item.id) return;
 
     const sessiondetails = await AsyncStorage.getItem('userdata');
-    if (true) {
+    if (this.routeData.userId) {
       const userdata = JSON.parse(sessiondetails);
        //alert(item.type);
       //if (item.type === 'lp_quiz') {
-        const response = await PostApi({ itemid: "6546466fe7bfb01861f2a067", userid: "6551a9d19f73e81d7c6e7cb4", status: 'started' }, 'GETQUIZ');
-        console.log("check data")
-        console.log(response.data?.results?.status, "check response")
+        
+        const response = await PostApi({ itemid: this.routeData.sectionId, userid: this.routeData.userId, status: 'started' }, 'GETQUIZ');
+        // console.log(response.data?.results?.status, "check response")
         this.setState({
           data: response.data,
           isLesson: false,
           isAssignment: false,
           isQuiz: true,
-          isStartQuiz: "started" === 'started', 
+          isStartQuiz: 'started' === 'started', 
           dataQuiz: {
             ...response.data?.results,
             questions: response.data?.questions || {},
@@ -180,7 +187,7 @@ class Quiz extends Component {
       
       console.log("176");
       
-      this.id = "6546466fe7bfb01861f2a067";
+      this.id = this.routeData.sectionId;
       // dispatch(showLoading(false));
     }
   };
@@ -246,26 +253,38 @@ class Quiz extends Component {
   retakeandStartQuiz =async() =>{
 
     const sessiondetails = await AsyncStorage.getItem('userdata');
-    if (sessiondetails != null) {
+    if (this.routeData.userId) {
       const userdata = JSON.parse(sessiondetails);
       const param = {
-        itemid: this.item?.id || route.params?.item?.id || 0,
-         userid: userdata.id
+        itemid: this.routeData.sectionId,
+         userid: this.routeData.userId
       };
 
       const response = await PostApi(param, 'RETAKE');
       
       
+      console.log(response,'RETAKE')
+
       if (response?.message === 'SUCCESS') {
-        // navigation.navigate('FinishLearningScreen', {
-        //   data: response.results,
-        //   dataQuiz,
-        //   retake_count: this.state.data?.meta_data?._lp_retake_count,
-        //   idQuiz: this.state.data?.id,
-        // });
-        await this.onStartQuiz();
+
+  this.setState({
+    data: response.data,
+    dataQuiz: this.state.dataQuiz,
+    retake_count: this.state.data?.meta_data?._lp_retake_count,
+    idQuiz: this.state.data?.id,
+  })
       }
 
+      // if (response?.message === 'SUCCESS') {
+      //   navigation.navigate('FinishLearningScreen', {
+      //     data: response.data.data,
+      //     dataQuiz,
+      //     retake_count: this.state.data?.meta_data?._lp_retake_count,
+      //     idQuiz: this.state.data?.id,
+      //   });
+      //   await this.onStartQuiz();
+      // }
+      await this.onStartQuiz();
     }
 
   }
@@ -292,15 +311,14 @@ class Quiz extends Component {
       return;
     }
     const sessiondetails = await AsyncStorage.getItem('userdata');
-    if (sessiondetails != null) {
+    if (this.routeData.userId) {
       const userdata = JSON.parse(sessiondetails);
       // const response = await Client.quizStart(param);
-      const response = await PostApi({ itemid: this.id, userid: userdata.id, status: 'started' }, 'GETQUIZ');
-      //console.log(response.data);
+      const response = await PostApi({ itemid: this.routeData.sectionId, userid: this.routeData.userId, status: 'started' }, 'GETQUIZ');
+      console.log(response, "check started response data");
 
       if (response.data?.status === 'success') {
-        console.log("quiz started");
-        console.log(response.data.results);
+      
         this.itemCheck = [];
         this.setState({
           isStartQuiz: true,
@@ -310,6 +328,7 @@ class Quiz extends Component {
             checked_questions: [],
           },
           itemQuestion: response.data.results.questions[0],
+         
         });
       } else {
         Alert.alert(response?.message);
@@ -333,6 +352,7 @@ class Quiz extends Component {
   onNextQuiz = () => {
     const { t } = this.props;
     const { pageActive, dataQuiz } = this.state;
+
     if (dataQuiz.questions.length === pageActive + 1) {
       Alert.alert('', 'You have answered all your questions. You can review or hit the Finish button');
       return;
@@ -401,26 +421,39 @@ class Quiz extends Component {
 
     ;
     const sessiondetails = await AsyncStorage.getItem('userdata');
-    // if (sessiondetails != null) {
-      if (true) {
+    // if (this.routeData.userId) {
+      if (this.routeData.userId) {
       const userdata = JSON.parse(sessiondetails);
       const param = {
-        // itemid: this.item?.id || route.params?.item?.id || 0,
-        itemid: "6546466fe7bfb01861f2a067",
+        // itemid: this.routeData.sectionId,
+        itemid: this.routeData.sectionId,
         answered: itemTemp1,
-        userid: "6551a9d19f73e81d7c6e7cb4"
+        userid: this.routeData.userId
       };
-
+console.log(param, itemTemp,"chheck params and tmp id")
       const response = await PostApi(param, 'FINISHQUIZ');
-      if (response?.data === 'success') {
-        // navigation.navigate('FinishLearningScreen', {
-        //   data: response.results,
-        //   dataQuiz,
-        //   retake_count: this.state.data?.meta_data?._lp_retake_count,
-        //   idQuiz: this.state.data?.id,
+      if (response?.data) {
+        this.setState({
+          data: response.data,
+          isQuiz: true,
+          isStartQuiz: false, 
+          dataQuiz,
+          retake_count: this.state.data?.meta_data?._lp_retake_count,
+          idQuiz: this.state.data?.id,
+        });
         // });
-        await this.reloadFinish();
+        // await this.reloadFinish();
       }
+      
+      // if (response?.data === 'success') {
+      //   navigation.navigate('FinishLearningScreen', {
+      //     data: response.results,
+      //     dataQuiz,
+      //     retake_count: this.state.data?.meta_data?._lp_retake_count,
+      //     idQuiz: this.state.data?.id,
+      //   });
+      //   // await this.reloadFinish();
+      // }
 
     }
     //dispatch(showLoading(false));
@@ -431,9 +464,9 @@ class Quiz extends Component {
     const { itemQuestion } = this.state;
     // tronLog('itemQuestion', itemQuestion);
     if (itemQuestion?.hint) {
-      Alert.alert('Hint', itemQuestion.hint);
+      alert('Hint', itemQuestion.hint);
     } else {
-      Alert.alert('Hint is empty');
+      alert('Hint is empty');
     }
   };
 
@@ -537,10 +570,10 @@ class Quiz extends Component {
     const { t, dispatch } = this.props;
     const { itemQuestion } = this.state;
 
-    console.log(itemQuestion);
+    
 
     if (!itemQuestion?.answer && itemQuestion.type !== 'sorting_choice') {
-      Alert.alert('', 'Please answer questions first');
+     alert('Please answer questions first');
       return;
     }
 
@@ -561,22 +594,25 @@ class Quiz extends Component {
       }
     }
     const sessiondetails = await AsyncStorage.getItem('userdata');
-    if (sessiondetails != null) {
+  
+    if (this.routeData.userId) {
+
       const userdata = JSON.parse(sessiondetails);
+    
       const param = {
-        id: this.item.id,
+        id: this.routeData.sectionId,
         question_id: itemQuestion.id,
         answered: itemTemp.value,
-        userid: userdata.id
+        userid: this.routeData.userId
       };
-      console.log(itemTemp.value);
       const response = await PostApi(param, 'CHECKANSWER');
       if (response.code === 'cannot_check_answer') {
         Alert.alert(response.message);
       }
+
       const dataTemp = {
         id: itemQuestion.id,
-        result: response.result,
+        result: response.data.result,
         explanation: response?.explanation || null,
       };
       if (response?.options) {
@@ -584,6 +620,7 @@ class Quiz extends Component {
         newItemQuestion.options = response.options;
         this.setState({ itemQuestion: newItemQuestion });
       }
+      console.log(dataTemp, "dataTemp")
       this.itemCheck.push(dataTemp);
       this.forceUpdate();
       // this.dispatch(showLoading(false));
@@ -613,7 +650,7 @@ class Quiz extends Component {
       //title
       'Confirmation',
       //body
-      'Are you sure you want to finish the Assessment section ?',
+      'Are you sure you want to finishitemQuestion the Assessment section ?',
       [
         
           {
@@ -678,6 +715,7 @@ class Quiz extends Component {
 
     return (
       <View style={styles.container}>
+
         {/* <Image source={Images.bannerMyCourse} style={styles.imgBanner} /> */}
         <View style={styles.header}>
           <View style={styles.header1}>
@@ -751,19 +789,27 @@ class Quiz extends Component {
                   </TouchableOpacity>
                 </View>
               )}
+             
+
+             
               {isQuiz && !isStartQuiz && data?.results?.status !== '' && (
+             
                 <View>
+                   
+                
                   <View>
                     <View style={styles.overview}>
+                   
                       <ProgressCircle
                         widthX={110}
                         progress={
-                          Math.round(data?.results?.results?.result) / 100
+                         Math.round(data.result) / 100
                         } 
                         strokeWidth={10}
                         backgroundColor="#F6F6F6"
                         progressColor={
-                          data?.results?.results?.graduation === 'failed'
+                          // data?.results?.results?.graduation === 'failed'
+                          data?.graduation === 'failed'
                             ? '#F46647'
                             : '#58C3FF'
                         }
@@ -776,11 +822,13 @@ class Quiz extends Component {
                         <Text
                           style={[
                             styles.txtResult,
-                            data?.results?.results?.graduation !== 'failed' && {
+                            // data?.results?.results?.graduation !== 'failed' && {
+                            data?.graduation !== 'failed' && {
                               color: '#58C3FF',
                             },
                           ]}>
-                          {data?.results?.results?.graduationText}
+                          {/* {data?.results?.results?.graduationText} */}
+                          {data?.graduationText}
                         </Text>
                       </View>
                     </View>
@@ -793,7 +841,9 @@ class Quiz extends Component {
                           grade: data?.results.results?.passing_grade,
                         })}*/}
 
-                        Your quiz assessment failed The result is {Math.round(data?.results?.results?.result)} % (the requirement is {data?.results.results?.passing_grade})
+                        {/* Your quiz assessment failed The result is {Math.round(data?.results?.results?.result)} % (the requirement is {data?.results.results?.passing_grade}) */}
+
+                        Your quiz assessment failed The result is {Math.round(data?.result)} % (the requirement is {data?.passing_grade})
                       </Text>
                     )}
 
@@ -802,7 +852,8 @@ class Quiz extends Component {
                         Questions
                       </Text>
                       <Text style={styles.txt2}>
-                        {data?.results.results?.question_count}
+                        {/* {data?.results.results?.question_count} */}
+                        {data?.question_count}
                       </Text>
                     </View>
                     <View style={styles.viewQuestion1}>
@@ -810,7 +861,8 @@ class Quiz extends Component {
                         Correct
                       </Text>
                       <Text style={styles.txt2}>
-                        {data?.results.results?.question_correct}
+                        {/* {data?.results.results?.question_correct} */}
+                        {data?.question_correct}
                       </Text>
                     </View>
                     <View style={styles.viewQuestion1}>
@@ -818,7 +870,8 @@ class Quiz extends Component {
                         Wrong
                       </Text>
                       <Text style={styles.txt2}>
-                        {data?.results.results?.question_wrong}
+                        {/* {data?.results.results?.question_wrong} */}
+                        {data?.question_wrong}
                       </Text>
                     </View>
                     <View style={styles.viewQuestion1}>
@@ -826,7 +879,8 @@ class Quiz extends Component {
                         Skipped
                       </Text>
                       <Text style={styles.txt2}>
-                        {data?.results.results?.question_empty}
+                        {/* {data?.results.results?.question_empty} */}
+                        {data?.question_empty}
                       </Text>
                     </View>
                     <View style={styles.viewQuestion1}>
@@ -834,27 +888,32 @@ class Quiz extends Component {
                         Points
                       </Text>
                       <Text style={styles.txt2}>
-                        {data?.results.results?.user_mark}
+                        {/* {data?.results.results?.user_mark} */}
+                        {data?.user_mark}
                       </Text>
                     </View>
-                    <View style={styles.viewQuestion1}>
+                    {/* <View style={styles.viewQuestion1}>
                       <Text style={styles.txt2}>
                         Timespent
                       </Text>
                       <Text style={styles.txt2}>
-                        {data?.results.results?.time_spend}
+                        {/* {data?.results.results?.time_spend} 
+                        {data?.time_spend}
                       </Text>
-                    </View>
+                    </View> */}
                   </View>
                   <View style={styles.viewBottom}>
-                    {(data?.results?.retake_count == -1 ||
-                      data?.results?.retake_count - data.results.retaken >
+                 
+                    {(this.state.retake_count == -1 ||
+                      this.state.retake_count - data.retaken >
                       0) && (
                         <TouchableOpacity
+                        
                           style={styles.btnRetoke}
                           onPress={() => this.retakeandStartQuiz()}>
                           <Text style={styles.txtRetoke}>
                             Retake
+                            {console.log("i am inside retake")}
                           </Text>
                           {/* <Text style={styles.txtRetoke}>
                           {'Retake {count}', {
@@ -884,7 +943,9 @@ class Quiz extends Component {
             </View>
 
             {isStartQuiz && isQuiz && (
+              
               <View style={{ marginTop: 20 }}>
+                
                 <View
                   style={{
                     flexDirection: 'row',
@@ -901,7 +962,7 @@ class Quiz extends Component {
                       alignItems: 'center',
                     }}>
                     <CountDown
-                      duration={dataQuiz?.total_time}
+                      duration={dataQuiz?.duration}
                       callBack={this.callBackFinishQuiz}
                       textStyle={{
                         color: 'red',
@@ -1110,6 +1171,7 @@ class Quiz extends Component {
                       alignItems: 'center',
                       marginTop: 30,
                     }}>
+                      
                     {this.itemCheck.find(x => x.id === itemQuestion.id)?.result
                       ?.correct ? (
                       <View
@@ -1188,7 +1250,7 @@ class Quiz extends Component {
                   </View>
                 )}
                 <View style={{ height: 36 }} />
-                {dataQuiz?.instant_check &&
+                {/* {dataQuiz?.instant_check &&
                   (!dataQuiz?.checked_questions?.length ||
                     !dataQuiz?.checked_questions.includes(itemQuestion.id)) && (
                     <TouchableOpacity
@@ -1207,13 +1269,15 @@ class Quiz extends Component {
                       <Text style={{ color: '#fff' }}>
                         Check answer
                       </Text>
+                      {console.log("i am in checked ")}
                       <IconI name="checkmark" color="#fff" />
                     </TouchableOpacity>
-                  )}
+                  )} */}
 
                 {dataQuiz?.instant_check &&
                   dataQuiz?.checked_questions &&
                   dataQuiz?.checked_questions.includes(itemQuestion.id) && (
+                    
                     <View
                       style={{
                         flexDirection: 'row',
@@ -1245,6 +1309,7 @@ class Quiz extends Component {
                     style={styles.btnNext}
                     onPress={this.onNextQuiz}>
                     {/* <Image source={Images.iconNext} style={styles.iconNext} /> */}
+                    <IconM name="arrow-right" size={20}  />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1264,6 +1329,7 @@ class Quiz extends Component {
                     backgroundColor: '#222',
                     borderRadius: 6,
                     paddingHorizontal: 21,
+                    paddingVertical: 10,
                     height: 50,
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -1285,13 +1351,14 @@ class Quiz extends Component {
         </KeyboardAvoidingView>
 
 
-        {/* {this.state.isShowReview && data && (
-        //   <ReviewQuiz
-        //     data={data}
-        //     isShowReview={this.state.isShowReview}
-        //     onClose={() => this.setState({ isShowReview: false })}
-        //   />
-        )} */}
+   {this.state.isShowReview && data && (
+    // console.log(data, "i am data")
+          <ReviewQuiz
+            data={data}
+            isShowReview={this.state.isShowReview}
+            onClose={() => this.setState({ isShowReview: false })}
+          />
+        )} 
 
 
       </View>
